@@ -27,7 +27,7 @@ CSSTODOTX.py [path to css] --verbose
 ```
 To install font use automatically use (-If, --install-font):
 This is a bool (e.g. True). 
-==**This Requires Administrator mode and will only work on windows, it will download the font if it can find it.**==
+**This Requires Administrator mode and will only work on windows, it will download the font if it can find it.**
 Also not all themes has a font that needs downloading & installing.
 ```shell
 CSSTODOTX.py [path to css] -If True
