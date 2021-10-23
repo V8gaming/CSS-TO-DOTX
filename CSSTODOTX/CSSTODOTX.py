@@ -21,19 +21,11 @@ args = parser.parse_args()
 path = args.csspath
 path = path.lower().endswith('css')
 
-
 if path == True:
     data = open("{Path}".format(Path = args.csspath), "r")
 else:
     print("Invalid file extension.")
     sys.exit(0)
-
-
-pat = re.compile(r'\$\$\$.*?<(.*?)>(.*?)\$\$\$', re.S)
-
-#f = open("demofile2.txt", "w")
-#f.write("")
-#f.close()
 
 def Convert(lst):
     res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
