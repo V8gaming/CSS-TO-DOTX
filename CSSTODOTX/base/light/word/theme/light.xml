@@ -14,22 +14,22 @@
 				<a:srgbClr val="E7E6E6"/>
 			</a:lt2>
 			<a:accent1>
-				<a:srgbClr val="FF00FF"/>
+				<a:srgbClr val="9d0006"/>
 			</a:accent1>
 			<a:accent2>
-				<a:srgbClr val="00FFFF"/>
+				<a:srgbClr val="af3a03"/>
 			</a:accent2>
 			<a:accent3>
-				<a:srgbClr val="00FF00"/>
+				<a:srgbClr val="b57614"/>
 			</a:accent3>
 			<a:accent4>
-				<a:srgbClr val="FFFF00"/>
+				<a:srgbClr val="79740e"/>
 			</a:accent4>
 			<a:accent5>
-				<a:srgbClr val="FF0000"/>
+				<a:srgbClr val="427b58"/>
 			</a:accent5>
 			<a:accent6>
-				<a:srgbClr val="0000FF"/>
+				<a:srgbClr val="282828"/>
 			</a:accent6>
 			<a:hlink>
 				<a:srgbClr val="0563C1"/>

@@ -12,7 +12,7 @@
     <Name>CSSTODOTX</Name>
     <RootNamespace>CSSTODOTX</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"C:\Users\User\Documents\Notes\.obsidian\themes\80s Neon.css" -vv</CommandLineArguments>
+    <CommandLineArguments>"./Obsidian gruvbox.css" -vv</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>

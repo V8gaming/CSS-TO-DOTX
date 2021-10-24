@@ -3,7 +3,6 @@
 This python program converts a Obsidian theme(CSS) to microsoft word theme(DOTX)
 Support for all css may come eventually.
 **This program only works on windows for now**
-
 ## Usage
 **Path to css is required**
 For basic usage use:
@@ -32,3 +31,6 @@ Also not all themes has a font that needs downloading & installing.
 ```shell
 CSSTODOTX.py [path to css] -If True
 ```
+
+## Modules
+[Python 3 Windows font installer](https://gist.github.com/lpsandaruwan/7661e822db3be37e4b50ec9579db61e0)
