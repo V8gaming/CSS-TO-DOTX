@@ -22,7 +22,7 @@ parser.add_argument("csspath", help="path to css file.")
 parser.add_argument('-if', '--install-font', default=False, type=bool, help="Install the font of the css if it can find it. Requires Administator Permissions to run.", dest="If")
 parser.add_argument('-df', '--delete-font', default=False, type=bool, help="Remove the font of the css if it can find it. Requires Administator Permissions to run.", dest="Df")
 parser.add_argument('-v', '--verbose', default=0, action="count", help="Do Verbose as: 1-info, 2-warning, 3-debug.", dest="verbose")
-parser.add_argument('-o', '--output', default="", type=str, help="Set output file name as a string without the extension (eg 'file'). extension is added automatically.", dest="output")
+parser.add_argument('-o', '--output', default="", type=str, help="Set output file name as a string without the file extension (eg 'file'). extension is added automatically.", dest="output")
 args = parser.parse_args()
 
 path = args.csspath
