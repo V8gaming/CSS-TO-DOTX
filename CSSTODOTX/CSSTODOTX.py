@@ -1,26 +1,28 @@
+__version__ = '0.1'
+__author__ = 'SwedishMask'
 import re
 import json
-import xml.etree.ElementTree as ET
-from xml.etree.ElementTree import tostring
 import dload
 import os
-from modules.windows_font_installer import main as ft
 import argparse
 import sys
 import winreg
 import shutil
 import requests
 import time
+import xml.etree.ElementTree as ET
 from zipfile import ZipFile
-
 from shutil import make_archive
+from modules.windows_font_installer import main as ft
+from xml.etree.ElementTree import tostring
 
-parser = argparse.ArgumentParser(description='Convert Obsidian theme(CSS) to Word Document theme(DOTX)')
-parser.add_argument("csspath", help="path to css")
+
+parser = argparse.ArgumentParser(description='Convert Obsidian theme(.CSS) to Word Document theme(.DOTX).')
+parser.add_argument("csspath", help="path to css file.")
 parser.add_argument('-if', '--install-font', default=False, type=bool, help="Install the font of the css if it can find it. Requires Administator Permissions to run.", dest="If")
 parser.add_argument('-df', '--delete-font', default=False, type=bool, help="Remove the font of the css if it can find it. Requires Administator Permissions to run.", dest="Df")
-parser.add_argument('-v', '--verbose', default=0, action="count", help="modify output verbosity", dest="verbose")
-parser.add_argument('-o', '--output', default="", type=str, help="set output file name (eg 'file'). extension is added automaticly", dest="output")
+parser.add_argument('-v', '--verbose', default=0, action="count", help="Do Verbose as: 1-info, 2-warning, 3-debug.", dest="verbose")
+parser.add_argument('-o', '--output', default="", type=str, help="Set output file name as a string without the extension (eg 'file'). extension is added automatically.", dest="output")
 args = parser.parse_args()
 
 path = args.csspath
@@ -152,7 +154,7 @@ def main():
             dict.append(value[0])
             try:
                 dict.append(value[1])
-            except:
+            except IndexError:
                 pass    
     for level1 in thdlistnum:
         #print(level1)
@@ -172,7 +174,7 @@ def main():
             ddict.append(value[0])
             try:
                 ddict.append(value[1])
-            except:
+            except IndexError:
                 pass
     for level1 in thllistnum:
         #print(level1)
@@ -192,7 +194,7 @@ def main():
             ldict.append(value[0])
             try:
                 ldict.append(value[1])
-            except:
+            except IndexError:
                 pass
 
     dict = Convert(dict)
@@ -245,6 +247,10 @@ def main():
     #print(dict["--accent-1"])
     dicts = [dict, ddict, ldict]
     h1 = ["--text-title-h1", "--accent-1"]
+    if args.verbose >= 1:
+        print("")
+    else:
+        pass
     for tag in h1:
         try:
             # Variable type tag
@@ -274,7 +280,6 @@ def main():
                     dictnum += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 1: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
             # Direct type tag
@@ -298,9 +303,7 @@ def main():
                     treename.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent1/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-
                         print("Dict: {Dictname}, heading 1: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
         except KeyError:
@@ -308,6 +311,10 @@ def main():
     else:
         pass
 
+    if args.verbose >= 1:
+        print("")
+    else:
+        pass
     # heading 2
     h2 = ["--text-title-h2", "--accent-2"]
     for tag in h2:
@@ -336,7 +343,6 @@ def main():
                     dictnum += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 2: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
             else:
@@ -360,7 +366,6 @@ def main():
                     dictnum += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 2: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
         except KeyError:
@@ -368,6 +373,10 @@ def main():
     else:
         pass
 
+    if args.verbose >= 1:
+        print("")
+    else:
+        pass
     # heading 3
     h3 = ["--text-title-h3", "--accent-3"]
     for tag in h3:
@@ -396,7 +405,6 @@ def main():
                     dictnum += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 3: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
             else:
@@ -420,7 +428,6 @@ def main():
                     dictname += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 3: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
         except KeyError:
@@ -428,6 +435,10 @@ def main():
     else:
         pass
 
+    if args.verbose >= 1:
+        print("")
+    else:
+        pass
     # heading 4
     h4 = ["--text-title-h4", "--accent-4"]
     for tag in h4:
@@ -456,7 +467,6 @@ def main():
                     dictnum += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 4: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
             else:
@@ -480,7 +490,6 @@ def main():
                     dictnum += 1
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 4: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
         except KeyError:
@@ -488,6 +497,10 @@ def main():
     else:
         pass
 
+    if args.verbose >= 1:
+        print("")
+    else:
+        pass
     # heading 5
     h5 = ["--text-title-h5", "--accent-5"]
     for tag in h5:
@@ -516,7 +529,6 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent5/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 5: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
             else:
@@ -540,7 +552,6 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent5/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 5: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
         except KeyError:
@@ -551,6 +562,10 @@ def main():
     
     # heading 6
     h6 = ["--text-title-h5", "--accent-6"]
+    if args.verbose >= 1:
+        print("")
+    else:
+        pass
     for tag in h6:
         try:
             if tag == "--text-title-h6":
@@ -576,8 +591,7 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent6/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 5: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
+                        print("Dict: {Dictname}, heading 6: {Temp}".format(Temp = temp, Dictname = dictname))
                     else:
                         pass
             elif tag == "--accent-6":
@@ -600,8 +614,7 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent6/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 5: {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
+                        print("Dict: {Dictname}, heading 6: {Temp}".format(Temp = temp, Dictname = dictname))
                     else:
                         pass
         except KeyError:
@@ -627,7 +640,6 @@ def main():
                     temp = temp.removeprefix("#")
                     if args.verbose >= 1:
                         print("Dict: {Dictname}, heading 6(Default to normal text): {Temp}".format(Temp = temp, Dictname = dictname))
-                        print("")
                     else:
                         pass
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent6/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
@@ -637,35 +649,81 @@ def main():
 
     
     # primary background 
-    try:
-        temp = str(dict["--background-primary"])
-        temp = temp.removeprefix("var(")
-        temp = temp.removesuffix(")")
-        temp = dict[str(temp)]
-        temp = temp.removeprefix("#")
-        if args.verbose >= 1:
-            print("primary background: {Temp}".format(Temp = temp))
-            print("")
-        else:
-            pass   
-    except KeyError:
+    if args.verbose >= 1:
+        print("")
+    else:
         pass
+    backgroundprimary = ["--background-primary"]
+    for tag in backgroundprimary:
+        try:
+            if tag == "--background-primary":
+                dictnum = 0
+                for dictlist in dicts:
+                    if dictnum == 0:
+                        dictname = "All"
+                        treename = tree
+                    elif dictnum == 1:
+                        dictname = "Dark"
+                        treename = dtree
+                    elif  dictnum == 2:
+                        dictname = "Light"
+                        treename = ltree
+                    else:
+                        pass
+                    dictnum +=1
+                    temp = str(dictlist["--background-primary"])
+                    temp = temp.removeprefix("var(")
+                    temp = temp.removesuffix(")")
+                    temp = dict[str(temp)]
+                    temp = temp.removeprefix("#")
+                    if args.verbose >= 1:
+                        print("Dict: {Dictname}, Primary Background: {Temp}".format(Temp = temp, Dictname = dictname))
+                    else:
+                        pass  
+            else:
+                print("unsupported tag convention.")
+                pass
+        except KeyError:
+            pass
 
     # Hyperlink text
-    try:
-        temp = str(dict["--text-link"])
-        temp = temp.removeprefix("var(")
-        temp = temp.removesuffix(")")
-        temp = dict[str(temp)]
-        temp = temp.removeprefix("#")
-        tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}hlink/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
-        if args.verbose >= 1:
-            print("Hyperlink text: {Temp}".format(Temp = temp))
-            print("")
-        else:
-            pass
-    except KeyError:
+    if args.verbose >= 1:
+        print("")
+    else:
         pass
+    Hyperlink = ["--text-link"]
+    for tag in Hyperlink:
+        try:
+            if tag == "--text-link":
+                dictnum = 0
+                for dictlist in dicts:
+                    if dictnum == 0:
+                        dictname = "All"
+                        treename = tree
+                    elif dictnum == 1:
+                        dictname = "Dark"
+                        treename = dtree
+                    elif  dictnum == 2:
+                        dictname = "Light"
+                        treename = ltree
+                    else:
+                        pass
+                    dictnum +=1
+                    temp = str(dictlist["--text-link"])
+                    temp = temp.removeprefix("var(")
+                    temp = temp.removesuffix(")")
+                    temp = dict[str(temp)]
+                    temp = temp.removeprefix("#")
+                    tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}hlink/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
+                    if args.verbose >= 1:
+                        print("Dict: {Dictname}, Hyperlink text: {Temp}".format(Temp = temp, Dictname = dictname))
+                    else:
+                        pass
+            else:
+                print("unsupported tag convention.")
+                pass
+        except KeyError:
+            pass
     
     roots = ["root", "lroot", "droot"]
     names = ["all", "light", "dark"]
@@ -774,62 +832,107 @@ def main():
         os.remove("./{Name}/OFL.txt".format(Name = name))
         fonts = os.listdir("./{Name}".format(Name = name))
         for font in fonts:
-            regex = re.findall("-", font)
-            regex1 = re.findall("Extra", font)
-            regex2 = re.findall("Semi", font)
-            print(regex)
-            if regex == ["-"]:
-                print(regex1)
-                if regex1 == ["Extra"]:
-                    print(font)
-                    splitfont = font.split("-")
-                    spacedfont = re.sub(r"(\w)([A-Z])", r"\1 \2", splitfont[0])
-                    print(splitfont[1])
-                    print(spacedfont + " " + splitfont[1])
-                    spacedfont = spacedfont + " " + splitfont[1]
-                    print(spacedfont)
-                elif regex1 != ["Extra"]:
-                    if regex2 == ["Semi"]:
-                        print(font)
-                        splitfont = font.split("-")
-                        spacedfont = re.sub(r"(\w)([A-Z])", r"\1 \2", splitfont[0])
-                        #splitfonti = splitfont[0](r"Italic")
-                        #print(splitfonti)
-                        print(spacedfont + " " + splitfont[1])
-                        spacedfont = spacedfont + " " + splitfont[1]
-                        
-                        print(spacedfont)
-                    if regex2 != ["Semi"]:
-                        print(font)
-                        spacedfont = re.sub(r"(\w)([A-Z])", r"\1 \2", font)
-                        spacedfont = spacedfont.replace("-", " ")
-                        print(spacedfont)
-
-
+            if args.verbose >= 3:
+                print(font)
             else:
-                spacedfont = re.sub(r"(\w)([A-Z])", r"\1 \2", font)
+                pass
+            fontn = font.replace("-", "")
+            fontn = fontn.removesuffix(".ttf")
+            #fontn = fontn.removesuffix(".ttf")
+            fontslist = re.sub( r"([A-Z])", r" \1", fontn).split()
+            
+            x = len(fontslist) - 1
+            #fontlast = fontslist[x].split(".")
+            #fontslist = fontslist.append(fontlast)
+            if args.verbose >= 3:
+                print(fontslist)
+            else:
+                pass
+            fontout = []
+            removebold = False
+            removelight = False
+            for font1 in fontslist:
+                if font1 == "Extra":
+                    removelight = True
+                    fontout.append(" ")
+                    fontout.append("ExtraLight")
+                elif font1 == "Source":
+                    fontout.append(font1)
+                elif font1 == "Regular":
+                    pass
+                elif font1 == "Semi":
+                    removebold = True
+                    fontout.append(" ")
+                    fontout.append("Semibold")
+                elif font1 == "Bold":
+                    if args.verbose >= 3:
+                        print("Should remove bold? {Removebold}".format(Removebold = removebold))
+                    if removelight == True:
+                        pass
+                    if removebold == True:
+                        pass
+                    else:
+                        fontout.append(" ")
+                        fontout.append(font1)
+                elif font1 == "Light":
+                    if args.verbose >= 3:
+                        print("Should remove light? {Removelight}".format(Removelight = removelight))
+                    else:
+                       pass
+                    if removelight == True:
+                        pass
+                    else:
+                        fontout.append(" ")
+                        fontout.append(font1)
+                else:
+                    fontout.append(" ")
+                    fontout.append(font1)
+                    
+            spacedfont = "".join(fontout)
+
             valfile = spacedfont.removesuffix(".ttf")
             valname = "{Font} (TrueType)".format(Font = valfile)
-            print(valname)
+            if args.verbose >= 3:
+                print(valname)
+            else:
+                pass
             try:
-                print(winreg.QueryValueEx(key, valname))
+                if args.verbose >= 3:
+                    print("Values of {Valname} are {Values}.".format(Values = winreg.QueryValueEx(key, valname), Valname = valname))
+                else:
+                    pass
             except OSError:
-                print("fail")
+                if args.verbose >= 2:
+                    print("Value for {Valname} does not exist.".format(Valname = valname))
+                else:
+                    pass
                 pass
             try:
                 winreg.DeleteValue(key, valname)
-                print("")
+                if args.verbose >= 2:
+                    print("")
+                else:
+                    pass
             except OSError:
-                print("fail")
-                print("")
+                if args.verbose >= 2:
+                    print("Value for {Valname} cannot be Deleted.".format(Valname = valname))
+                    print("")
+                else:
+                    pass
                 pass
             if args.Df != True:
+                # required because removing registries are slowish
+                time.sleep(0.05)
                 ft("./{Name}/{Font}".format(Font = font,Name = name))
-                print("------------------------------------------")
+                if args.verbose >= 3:
+                    print("------------------------------------------")
+                else:
+                    pass
             else:
                 pass
     else:
         print("-if or -install-font value is not a bool.")
+        sys.exit(0)
 
     if args.output == "":
         outputname = args.csspath
@@ -842,12 +945,9 @@ def main():
         outputname = args.output
     roots = ["all", "light", "dark"]
     for aroot in roots:  
-        make_archive(
-            "{Name}-{Aroot}".format(Name = outputname, Aroot = aroot),
-            format='zip',
-            root_dir='./base/{Aroot}'.format(Name = outputname, Aroot = aroot),
-            base_dir='./',
-        )
+        make_archive("{Name}-{Aroot}".format(Name = outputname, Aroot = aroot), format='zip',
+                     root_dir='./base/{Aroot}'.format(Name = outputname, Aroot = aroot),
+                     base_dir='./')
 
         try:
             os.remove("./output/{Name}-{Aroot}.dotx".format(Name = outputname, Aroot = aroot))
