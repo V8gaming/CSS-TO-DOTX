@@ -814,7 +814,7 @@ def main():
             shutil.rmtree(name)
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
-       
+        zfname = name
         spacedname = re.sub(r"(\w)([A-Z])", r"\1 \2", name)
         urlname = spacedname.replace(" ", "%20")
         #print(urlname)
@@ -920,6 +920,11 @@ def main():
                 else:
                     pass
                 pass
+            try:
+                os.remove("C:/Windows/Fonts/{Font}".format(Font = font))
+            except OSError:
+                pass
+
             if args.Df != True:
                 # required because removing registries are slowish
                 time.sleep(0.05)
@@ -930,6 +935,14 @@ def main():
                     pass
             else:
                 pass
+        try:
+            os.remove("./{Name}.zip".format(Name = name))
+        except OSError:
+            pass
+        try:
+            shutil.rmtree("./{Name}".format(Name = name))
+        except OSError:
+            pass
     else:
         print("-if or -install-font value is not a bool.")
         sys.exit(0)
@@ -957,6 +970,7 @@ def main():
             os.rename("{Name}-{Aroot}.zip".format(Name = outputname, Aroot = aroot),"./output/{Name}-{Aroot}.dotx".format(Name = outputname, Aroot = aroot))
         except FileExistsError:
             pass
+
 main()
 
 if __name__ == main:
