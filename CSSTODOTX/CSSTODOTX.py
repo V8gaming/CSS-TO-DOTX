@@ -25,6 +25,7 @@ parser.add_argument('-v', '--verbose', default=0, action="count", help="Do Verbo
 parser.add_argument('-o', '--output', default="", type=str, help="Set output file name as a string without the file extension (eg 'file'). extension is added automatically.", dest="output")
 args = parser.parse_args()
 
+
 path = args.csspath
 path = path.lower().endswith('css')
 if args.If and args.Df == True:
@@ -233,6 +234,7 @@ def main():
     #else:
     #    pass
     
+
     #for xml0 in root:
         #print(xml0.tag, xml0.attrib)
         #for xml1 in xml0:
@@ -724,7 +726,86 @@ def main():
                 pass
         except KeyError:
             pass
+
+    # # Hyperlink background
+    # if args.verbose >= 1:
+    #     print("")
+    # else:
+    #     pass
+    # Hyperlinkbackground = ["--text-highlight-bg"]
+    # for tag in Hyperlinkbackground:
+    #     try:
+    #         if tag == "--text-highlight-bg":
+    #             dictnum = 0
+    #             for dictlist in dicts:
+    #                 if dictnum == 0:
+    #                     dictname = "All"
+    #                     treename = tree
+    #                 elif dictnum == 1:
+    #                     dictname = "Dark"
+    #                     treename = dtree
+    #                 elif  dictnum == 2:
+    #                     dictname = "Light"
+    #                     treename = ltree
+    #                 else:
+    #                     pass
+    #                 dictnum +=1
+    #                 temp = str(dictlist["--text-highlight-bg"])
+    #                 temp = temp.removeprefix("var(")
+    #                 temp = temp.removesuffix(")")
+    #                 temp = dict[str(temp)]
+    #                 temp = temp.removeprefix("#")
+    #                 ## Fix tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}hlink/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
+    #                 if args.verbose >= 1:
+    #                     print("Dict: {Dictname}, Hyperlink background: {Temp}".format(Temp = temp, Dictname = dictname))
+    #                 else:
+    #                     pass
+    #         else:
+    #             print("unsupported tag convention.")
+    #             pass
+    #     except KeyError:
+    #         pass
     
+    # # Faint Text
+    # if args.verbose >= 1:
+    #     print("")
+    # else:
+    #     pass
+    # Faint = ["--text-faint"]
+    # for tag in Faint:
+    #     try:
+    #         if tag == "--text-faint":
+    #             dictnum = 0
+    #             for dictlist in dicts:
+    #                 if dictnum == 0:
+    #                     dictname = "All"
+    #                     treename = tree
+    #                 elif dictnum == 1:
+    #                     dictname = "Dark"
+    #                     treename = dtree
+    #                 elif  dictnum == 2:
+    #                     dictname = "Light"
+    #                     treename = ltree
+    #                 else:
+    #                     pass
+    #                 dictnum +=1
+    #                 temp = str(dictlist["--text-faint"])
+    #                 temp = temp.removeprefix("var(")
+    #                 temp = temp.removesuffix(")")
+    #                 temp = dict[str(temp)]
+    #                 temp = temp.removeprefix("#")
+    ##                tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}dk1/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
+    #                 if args.verbose >= 1:
+    #                     print("Dict: {Dictname}, Faint Text: {Temp}".format(Temp = temp, Dictname = dictname))
+    #                 else:
+    #                     pass
+    #         else:
+    #             print("unsupported tag convention.")
+    #             pass
+    #     except KeyError:
+    #         pass
+
+
     roots = ["root", "lroot", "droot"]
     names = ["all", "light", "dark"]
     for rootname in roots:
@@ -832,6 +913,7 @@ def main():
         os.remove("./{Name}/OFL.txt".format(Name = name))
         fonts = os.listdir("./{Name}".format(Name = name))
         for font in fonts:
+
             if args.verbose >= 3:
                 print(font)
             else:
@@ -957,6 +1039,7 @@ def main():
     else:
         outputname = args.output
     roots = ["all", "light", "dark"]
+
     for aroot in roots:  
         make_archive("{Name}-{Aroot}".format(Name = outputname, Aroot = aroot), format='zip',
                      root_dir='./base/{Aroot}'.format(Name = outputname, Aroot = aroot),
@@ -970,6 +1053,8 @@ def main():
             os.rename("{Name}-{Aroot}.zip".format(Name = outputname, Aroot = aroot),"./output/{Name}-{Aroot}.dotx".format(Name = outputname, Aroot = aroot))
         except FileExistsError:
             pass
+    
+        
 
 main()
 
