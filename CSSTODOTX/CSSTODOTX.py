@@ -1,8 +1,15 @@
-__version__ = '0.1'
-__author__ = 'SwedishMask'
+"""A simple tool to convert CSS to DOTX"""
+
+__version__ = '0.1.2'
+__author__ = 'Samuel Voss'
+__copyright__ = 'Copyright 2021 Samuel Voss'
+
+__license__ = 'MIT'
+__maintainer__ = 'Samuel Voss'
+__email__ = 'samvoss69@gmail.com'
+__status__ = 'Development'
+
 import re
-import json
-import dload
 import os
 import argparse
 import sys
@@ -1057,6 +1064,7 @@ def main():
         
 
 main()
+
 
 if __name__ == main:
     main()
