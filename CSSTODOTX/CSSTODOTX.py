@@ -1,6 +1,6 @@
 """A simple tool to convert CSS to DOTX"""
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __author__ = 'Samuel Voss'
 __copyright__ = 'Copyright 2021 Samuel Voss'
 
@@ -17,34 +17,73 @@ import winreg
 import shutil
 import requests
 import time
+import datetime
 import xml.etree.ElementTree as ET
+from colorama import Fore, Style, init
 from zipfile import ZipFile
 from shutil import make_archive
 from modules.windows_font_installer import main as ft
 from xml.etree.ElementTree import tostring
 
-
 parser = argparse.ArgumentParser(description='Convert Obsidian theme(.CSS) to Word Document theme(.DOTX).')
 parser.add_argument("csspath", help="path to css file.")
 parser.add_argument('-if', '--install-font', default=False, type=bool, help="Install the font of the css if it can find it. Requires Administator Permissions to run.", dest="If")
 parser.add_argument('-df', '--delete-font', default=False, type=bool, help="Remove the font of the css if it can find it. Requires Administator Permissions to run.", dest="Df")
-parser.add_argument('-v', '--verbose', default=0, action="count", help="Do Verbose as: 1-info, 2-warning, 3-debug.", dest="verbose")
+parser.add_argument('-v', '--verbose', default=0, action="count", help="Do Verbose as: 1-info, 2-warning, 3-debug. 4-Dump", dest="verbose")
 parser.add_argument('-o', '--output', default="", type=str, help="Set output file name as a string without the file extension (eg 'file'). extension is added automatically.", dest="output")
+parser.add_argument('-l', '--log', default=False, type=bool, help="Log the Verbose to a file, requires verbose to exist(>0)", dest="log")
 args = parser.parse_args()
+
+if args.verbose > 0:
+    init()
+    print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}Starting CSSTODOTX.py{Style.RESET_ALL}")
+
+if args.log == True:
+    datetime = str(datetime.datetime.now())
+    print(datetime)
+    datetime = datetime.replace(":","_")
+    datetime = datetime.split(".")[0]
+    
+    f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "w")
+    f.write("")
+    f.close()
+    errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
+    errorfile.write("")
+    errorfile.close()
+    if args.verbose <= 0:
+        print(f"{Fore.RED}{str(time.process_time())}: [ERROR]{Style.RESET_ALL} {Fore.WHITE}Logging requires verbose to be set(>0){Style.RESET_ALL}")
+        errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
+        errorfile.write(f"{str(time.process_time())}: Logging requires verbose to be set(>0)")
+        errorfile.close()
+        sys.exit()
+        
 
 
 path = args.csspath
+# checks if the file ends with .css
 path = path.lower().endswith('css')
 if args.If and args.Df == True:
-    print("Conflicting arguments.")
-    exit(0)
-
-if path == True:
-    data = open("{Path}".format(Path = args.csspath), "r")
-else:
-    print("Invalid file extension.")
+    # checks if --install-font and --delete-font are both true and exits
+    print(f"{Fore.RED}{str(time.process_time())}: [ERROR]{Style.RESET_ALL} {Fore.WHITE}Conflicting arguments.{Style.RESET_ALL}")
+    if args.log == True:
+        errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
+        errorfile.write(f"{str(time.process_time())}: Conflicting arguments.")
+        errorfile.close()
     sys.exit(0)
 
+if path == True:
+    # opens the css file
+    data = open("{Path}".format(Path = args.csspath), "r")
+else:
+    # exits if the file is not a css file
+    print(f"{Fore.RED}[ERROR]{Style.RESET_ALL} {Fore.WHITE}Invalid file extension.{Style.RESET_ALL}")
+    if args.log == True:
+        errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
+        errorfile.write(f"{str(time.process_time())}: Invalid file extension.")
+        errorfile.close()
+    sys.exit(0)
+
+# converts a list to a dictionary
 def Convert(lst):
     res_dct = {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
     return res_dct
@@ -52,22 +91,50 @@ def Convert(lst):
 listnum = []
 thdlistnum = []
 thllistnum = []
-# Iterate over a sequence of numbers from 0 to 4
-for i in range(30):
+
+# look into this
+rangenum = 30
+for i in range(rangenum):
     # In each iteration, add an empty list to the main list
     listnum.append([])
     thdlistnum.append([])
     thllistnum.append([])
-#print('List of lists:')
-#print(listnum)
+if args.verbose >= 3:
+    print('List of lists:')
+    print(len(listnum))
+    print(len(thdlistnum))
+    print(len(thllistnum))
 
 def main():
-    result = {}
+    """Main function"""
+    # if the line in eligable to be appended to the list
+    # append is 'all', appendltheme is 'light', appenddtheme is 'dark'
     append = False
     appendltheme = False
     appenddtheme = False
+
+    # buffer of the css file as individual lines
     buf = data.readlines()
-    #print(type(buf))
+    if args.verbose >= 4:
+        print(buf)
+    if args.verbose >= 3:
+        print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}Buffer type:{Style.RESET_ALL}")
+        if isinstance(buf, list):
+            print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}List{Style.RESET_ALL}")
+            if args.log == True:
+                errorfile = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+                errorfile.write(f"{str(time.process_time())}: Buffer type: List")
+                errorfile.close()
+        else:
+            print(f"{Fore.RED}{str(time.process_time())}: [ERROR]{Style.RESET_ALL} {Fore.WHITE}Not a list{Style.RESET_ALL}")
+            if args.log == True:
+                errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
+                errorfile.write(f"{str(time.process_time())}: Not a list")
+                errorfile.close()
+        print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}Buffer length:{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}{len(buf)}{Style.RESET_ALL}")
+
+    # set counts to 0
     count = 0
     listitr = 0
     themeditr = 0
@@ -76,10 +143,15 @@ def main():
     for line in buf:
         #print(line)
         #print("\n")
+        # removes the newline character
         line = line.removesuffix("\n")
+        # checks if the line has a '{'
         start = re.findall("{", line)
+        # checks if the line has 'theme-dark'
         themedark = re.findall("theme-dark", line)
+        # checks if the line has 'theme-light'
         themelight = re.findall("theme-light", line)
+        # checks if the line has '}'
         end = re.findall("}", line)
         #print(start)
         count += 1
@@ -88,23 +160,28 @@ def main():
         elif line == ":root":
             pass
         elif start == ['{']:
+            # if regex finds '{' then appending to 'all' is true
             append = True
             #print("true")
         elif line == "}":
+            # if regex finds '}' then appending to 'all', 'dark' and 'light' is false
             append = False
             appenddtheme = False
             appendltheme = False
             listitr +=1
             #print("false")
         elif themedark == ['theme-dark']:
+            # if regex finds 'theme-dark' then appending to 'dark' is true and appending to 'light' is false
             appenddtheme = True
             appendltheme = False
             themeditr += 1
         elif themelight == ['theme-light']:
+            # if regex finds 'theme-light' then appending to 'light' is true and appending to 'dark' is false
             appenddtheme = False
             appendltheme = True
             themelitr += 1
         elif end == "}":
+            # if regex finds '}' then appending to 'all', 'dark' and 'light' is false
             append = False
             appenddtheme = False
             appendltheme = False
@@ -112,93 +189,131 @@ def main():
             #print("false")
         else:
             if append == True:
-                #print("Line{}: {}".format(count, line.strip()))
+                if args.verbose >= 4:
+                    print("Line{}: {}".format(count, line.strip()))
+                    print("")
+                if args.verbose >= 3:
+                    print("Appending to 'all'")
+                    print("")
                 try:
+                    # appends the line to 'all'
                     listnum[listitr].append(line)
                 except IndexError:
-                    #print("Not Enough Lists")
+                    # not enough lists in listnum, increase rangenum
+                    #print("Not Enough Lists, increase 'rangenum'")
+                    #print("")
                     pass
             else:
                 pass            
             if appenddtheme == True:
-                #print("Dark theme, Line{}: {}".format(count, line.strip()))
+                if args.verbose >= 4:
+                    print("Dark theme, Line{}: {}".format(count, line.strip()))
+                    print("")
+                if args.verbose >= 3:
+                    print("Appending to 'dark'")
+                    print("")
+                
                 try:
+                    # appends the line to 'dark'
                     thdlistnum[themeditr].append(line)
-                    #print(thdlistnum[themeditr].append(line))
                 except IndexError:
-                    #print("Not Enough Lists")
+                    # not enough lists in listnum, increase rangenum
+                    #print("Not Enough Lists, increase 'rangenum'")
+                    #print("")
                     pass
             else:
                 pass            
             if appendltheme == True:
-                #print("Light theme, Line{}: {}".format(count, line.strip()))
+                if args.verbose >= 4:
+                    print("Light theme, Line{}: {}".format(count, line.strip()))
+                    print("")
+                if args.verbose >= 3:
+                    print("Appending to 'light'")
+                    print("")
                 try:
+                    # appends the line to 'light'
                     thllistnum[themelitr].append(line)
                 except IndexError:
-                    #print("Not Enough Lists")
+                    # not enough lists in listnum, increase rangenum
+                    #print("Not Enough Lists, increase 'rangenum'")
+                    #print("")
                     pass
             else:
                 pass
-                  
-            #print("Line{}: {}".format(count, line.strip()))
+            if args.verbose >= 4:
+                print("Line{}: {}".format(count, line.strip()))      
+
+    # creates list objects 'dict' as 'all', 'ldict' as 'light' and 'ddict' as 'dark'
     dict = list()
     ldict = list()
     ddict = list()
     for level1 in listnum:
         #print(level1)
-        #f = open("demofile2.txt", "a")
-        #f.write(str(level1))
-        #f.write("\n")
-        #f.close()
+        if args.log == True:
+            f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+            f.write(f"{str(time.process_time_ns())}: all.section: ")
+            f.write(str(level1))
+            f.write("\n")
+            f.close()
+
         for level2 in level1:
             value = level2.removesuffix(";")
             value = value.replace(" ", "")
             value = value.split(":")
-            #f = open("demofile2.txt", "a")
-            #f.write(str(value))
-            #f.write("\n")
-            #f.close()
+            if args.log == True:
+                f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+                f.write(f"{str(time.process_time_ns())}: all.value: ")
+                f.write(str(value))
+                f.write("\n")
+                f.close()
+
             #print(value)
             dict.append(value[0])
             try:
                 dict.append(value[1])
             except IndexError:
                 pass    
+            
     for level1 in thdlistnum:
-        #print(level1)
-        #f = open("demofile2.txt", "a")
-        #f.write(str(level1))
-        #f.write("\n")
-        #f.close()
+        if args.log == True:
+            f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+            f.write(f"{str(time.process_time_ns())}: dark.section: ")
+            f.write(str(level1))
+            f.write("\n")
+            f.close()
         for level2 in level1:
             value = level2.removesuffix(";")
             value = value.replace(" ", "")
             value = value.split(":")
-            #f = open("demofile2.txt", "a")
-            #f.write(str(value))
-            #f.write("\n")
-            #f.close()
-            #print(value)
+            if args.log == True:
+                f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+                f.write(f"{str(time.process_time_ns())}: dark.value: ")
+                f.write(str(value))
+                f.write("\n")
+                f.close()
             ddict.append(value[0])
             try:
                 ddict.append(value[1])
             except IndexError:
                 pass
+
     for level1 in thllistnum:
-        #print(level1)
-        #f = open("demofile2.txt", "a")
-        #f.write(str(level1))
-        #f.write("\n")
-        #f.close()
+        if args.log == True:
+            f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+            f.write(f"{str(time.process_time_ns())}: light.section: ")
+            f.write(str(level1))
+            f.write("\n")
+            f.close()
         for level2 in level1:
             value = level2.removesuffix(";")
             value = value.replace(" ", "")
             value = value.split(":")
-            #f = open("demofile2.txt", "a")
-            #f.write(str(value))
-            #f.write("\n")
-            #f.close()
-            #print(value)
+            if args.log == True:
+                f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
+                f.write(f"{str(time.process_time_ns())}: light.value: ")
+                f.write(str(value))
+                f.write("\n")
+                f.close()
             ldict.append(value[0])
             try:
                 ldict.append(value[1])
@@ -902,7 +1017,6 @@ def main():
             shutil.rmtree(name)
         except OSError as e:
             print("Error: %s - %s." % (e.filename, e.strerror))
-        zfname = name
         spacedname = re.sub(r"(\w)([A-Z])", r"\1 \2", name)
         urlname = spacedname.replace(" ", "%20")
         #print(urlname)
@@ -985,6 +1099,7 @@ def main():
                 print(valname)
             else:
                 pass
+            
             try:
                 if args.verbose >= 3:
                     print("Values of {Valname} are {Values}.".format(Values = winreg.QueryValueEx(key, valname), Valname = valname))
@@ -1067,4 +1182,5 @@ main()
 
 
 if __name__ == main:
-    main()
+    main()   
+
