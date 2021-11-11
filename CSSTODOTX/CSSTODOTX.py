@@ -5,7 +5,7 @@ I know its slow.
 Complain about any other problems.
 """
 
-__version__ = '0.1.dev4'
+__version__ = '0.1.dev5'
 __author__ = 'Samuel Voss'
 __copyright__ = 'Copyright 2021 Samuel Voss'
 __credits__ = ['Samuel Voss', 'Github Copilot']
