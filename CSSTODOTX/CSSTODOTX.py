@@ -2,7 +2,7 @@
 A simple tool to convert CSS to DOTX
 I'm using way too much if statements.
 I know its slow.
-Complain about any other problem.
+Complain about any other problems.
 """
 
 __version__ = '0.1.dev4'
@@ -33,12 +33,29 @@ from modules.predefiner import printInfo, printError, printDebug, printWarning
 
 parser = argparse.ArgumentParser(description='Convert Obsidian theme(.CSS) to Word Document theme(.DOTX).')
 parser.add_argument("csspath", help="path to css file.")
-parser.add_argument('-if', '--install-font', default=False, type=bool, help="Install the font of the css if it can find it. Requires Administator Permissions to run.", dest="If")
-parser.add_argument('-df', '--delete-font', default=False, type=bool, help="Remove the font of the css if it can find it. Requires Administator Permissions to run.", dest="Df")
+parser.add_argument('-if', '--install-font', default=0, action="count", help="Install the font of the css if it can find it. Requires Administator Permissions to run.", dest="If")
+parser.add_argument('-df', '--delete-font', default=0, action="count", help="Remove the font of the css if it can find it. Requires Administator Permissions to run.", dest="Df")
 parser.add_argument('-v', '--verbose', default=0, action="count", help="Do Verbose as: 1-info, 2-warning, 3-debug. 4-Dump", dest="verbose")
-parser.add_argument('-o', '--output', default="", type=str, help="Set output file name as a string without the file extension (eg 'file'). extension is added automatically.", dest="output")
-parser.add_argument('-l', '--log', default=False, type=bool, help="Log the Verbose to a file, requires verbose to exist(>0)", dest="log")
+parser.add_argument('-oN', '--output-name', default="", type=str, help="Set output file name as a string without the file extension (eg 'file'). extension is added automatically.", dest="output")
+parser.add_argument('-oD', '--output-dir', default="./output", type=str, help="Set output directory as a string.", dest="output_dir")
+parser.add_argument('-l', '--log', default=0, action="count", help="Log the Verbose to a file, requires verbose to exist(>0)", dest="log")
 args = parser.parse_args()
+
+if args.log > 0:
+    logbool = True
+else:
+    logbool = False
+
+if args.If > 0:
+    ifbool = True
+else:
+    ifbool = False
+
+if args.Df > 0:
+    dfbool = True
+else:
+    dfbool = False
+
 
 if args.verbose > 0:
     init()
@@ -53,7 +70,7 @@ if args.verbose > 0:
     printInfo("Starting CSSTODOTX.py")
 
 
-if args.log == True:
+if logbool == True:
     datetime = str(datetime.datetime.now())
     datetime = datetime.replace(":","_")
     datetime = datetime.split(".")[0]
@@ -76,10 +93,10 @@ if args.log == True:
 path = args.csspath
 # checks if the file ends with .css
 path = path.lower().endswith('css')
-if args.If and args.Df == True:
+if ifbool and dfbool == True:
     # checks if --install-font and --delete-font are both true and exits
     printError("--install-font and --delete-font are both true. Please only use one of these options.")
-    if args.log == True:
+    if logbool == True:
         errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
         errorfile.write(f"{str(time.process_time())}: --install-font and --delete-font are both true. Please only use one of these options.")
         errorfile.close()
@@ -91,7 +108,7 @@ if path == True:
 else:
     # exits if the file is not a css file
     printError("The file is not a css file.")
-    if args.log == True:
+    if logbool == True:
         errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
         errorfile.write(f"{str(time.process_time())}: The file is not a css file.")
         errorfile.close()
@@ -136,13 +153,13 @@ def main():
         printDebug("Buffer type:")
         if isinstance(buf, list):
             printDebug("Buffer type: List")
-            if args.log == True:
+            if logbool == True:
                 errorfile = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
                 errorfile.write(f"{str(time.process_time())}: Buffer type: List")
                 errorfile.close()
         else:
             printWarning(f"Buffer type: {type(buf)}")
-            if args.log == True:
+            if logbool == True:
                 errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
                 errorfile.write(f"{str(time.process_time())}: Not a list")
                 errorfile.close()
@@ -257,7 +274,7 @@ def main():
     ddict = list()
     for level1 in listnum:
         #print(level1)
-        if args.log == True:
+        if logbool == True:
             # writes the section of 'all' to the dump file
             f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
             f.write(f"{str(time.process_time())}: all.section: ")
@@ -269,7 +286,7 @@ def main():
             value = level2.removesuffix(";")
             value = value.replace(" ", "")
             value = value.split(":")
-            if args.log == True:
+            if logbool == True:
                 # writes the values of 'all' to the dump file
                 f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
                 f.write(f"{str(time.process_time())}: all.value: ")
@@ -285,7 +302,7 @@ def main():
                 pass    
             
     for level1 in thdlistnum:
-        if args.log == True:
+        if logbool == True:
             # writes the section of 'dark' to the dump file
             f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
             f.write(f"{str(time.process_time())}: dark.section: ")
@@ -296,7 +313,7 @@ def main():
             value = level2.removesuffix(";")
             value = value.replace(" ", "")
             value = value.split(":")
-            if args.log == True:
+            if logbool == True:
                 # writes the values of 'dark' to the dump file
                 f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
                 f.write(f"{str(time.process_time())}: dark.value: ")
@@ -310,7 +327,7 @@ def main():
                 pass
 
     for level1 in thllistnum:
-        if args.log == True:
+        if logbool == True:
             # writes the section of 'light' to the dump file
             f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
             f.write(f"{str(time.process_time())}: light.section: ")
@@ -321,7 +338,7 @@ def main():
             value = level2.removesuffix(";")
             value = value.replace(" ", "")
             value = value.split(":")
-            if args.log == True:
+            if logbool == True:
                 # writes the values of 'light' to the dump file
                 f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
                 f.write(f"{str(time.process_time())}: light.value: ")
@@ -1014,10 +1031,10 @@ def main():
         #except OSError:
         #    pass
         #os.rename("./base/word/theme/theme2.xml", "./base/word/theme/theme1.xml")
-    #print(type(args.If))
-    if args.If == False:
+    #print(type(ifbool))
+    if ifbool == False:
         pass
-    elif args.If == True:
+    elif ifbool == True:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\\", 0, winreg.KEY_ALL_ACCESS)
         lst = dict["--font-monospace"]
         lst = lst.split(",")
@@ -1141,7 +1158,7 @@ def main():
             except OSError:
                 pass
 
-            if args.Df != True:
+            if dfbool != True:
                 # required because removing registries are slowish
                 time.sleep(0.05)
                 ft("./{Name}/{Font}".format(Font = font,Name = name))
@@ -1175,17 +1192,21 @@ def main():
     roots = ["all", "light", "dark"]
 
     for aroot in roots:  
-        make_archive("{Name}-{Aroot}".format(Name = outputname, Aroot = aroot), format='zip',
-                     root_dir='./base/{Aroot}'.format(Name = outputname, Aroot = aroot),
+        make_archive(f"{outputname}-{aroot}", format='zip',
+                     root_dir=f'./base/{aroot}',
                      base_dir='./')
 
         try:
-            os.remove("./output/{Name}-{Aroot}.dotx".format(Name = outputname, Aroot = aroot))
+            os.remove(f"{args.output_dir}/{outputname}-{aroot}.dotx")
         except FileNotFoundError:
+            # if args.verbose >= 2:
+            #     printWarning(f"{outputname}-{aroot}.dotx not found.")
             pass
         try:
-            os.rename("{Name}-{Aroot}.zip".format(Name = outputname, Aroot = aroot),"./output/{Name}-{Aroot}.dotx".format(Name = outputname, Aroot = aroot))
+            os.rename(f"{outputname}-{aroot}.zip",f"{args.output_dir}/{outputname}-{aroot}.dotx")
         except FileExistsError:
+            if args.verbose >= 2:
+                printWarning(f"{outputname}-{aroot}.dotx already exists.")
             pass
     
         
