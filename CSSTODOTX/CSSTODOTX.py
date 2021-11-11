@@ -1,8 +1,14 @@
-"""A simple tool to convert CSS to DOTX"""
+"""
+A simple tool to convert CSS to DOTX
+I'm using way too much if statements.
+I know its slow.
+Complain about any other problem.
+"""
 
-__version__ = '0.1.3'
+__version__ = '0.1.dev4'
 __author__ = 'Samuel Voss'
 __copyright__ = 'Copyright 2021 Samuel Voss'
+__credits__ = ['Samuel Voss', 'Github Copilot']
 
 __license__ = 'MIT'
 __maintainer__ = 'Samuel Voss'
@@ -23,7 +29,7 @@ from colorama import Fore, Style, init
 from zipfile import ZipFile
 from shutil import make_archive
 from modules.windows_font_installer import main as ft
-from xml.etree.ElementTree import tostring
+from modules.predefiner import printInfo, printError, printDebug, printWarning
 
 parser = argparse.ArgumentParser(description='Convert Obsidian theme(.CSS) to Word Document theme(.DOTX).')
 parser.add_argument("csspath", help="path to css file.")
@@ -36,11 +42,19 @@ args = parser.parse_args()
 
 if args.verbose > 0:
     init()
-    print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}Starting CSSTODOTX.py{Style.RESET_ALL}")
+    printInfo("CSSTODOTX v" + __version__ + " by " + __author__)
+    printInfo("Copyright " + __copyright__)
+    printInfo("License: " + __license__)
+    printInfo("Maintainer: " + __maintainer__)
+    printInfo("Email: " + __email__)
+    printInfo("Status: " + __status__)
+    print("")
+
+    printInfo("Starting CSSTODOTX.py")
+
 
 if args.log == True:
     datetime = str(datetime.datetime.now())
-    print(datetime)
     datetime = datetime.replace(":","_")
     datetime = datetime.split(".")[0]
     
@@ -51,9 +65,9 @@ if args.log == True:
     errorfile.write("")
     errorfile.close()
     if args.verbose <= 0:
-        print(f"{Fore.RED}{str(time.process_time())}: [ERROR]{Style.RESET_ALL} {Fore.WHITE}Logging requires verbose to be set(>0){Style.RESET_ALL}")
+        printError("Verbose is set to 0, but logging is enabled. Please set Verbose to 1 or higher to enable logging.")
         errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
-        errorfile.write(f"{str(time.process_time())}: Logging requires verbose to be set(>0)")
+        errorfile.write(f"{str(time.process_time())}: Verbose is set to 0, but logging is enabled. Please set Verbose to 1 or higher to enable logging.")
         errorfile.close()
         sys.exit()
         
@@ -64,10 +78,10 @@ path = args.csspath
 path = path.lower().endswith('css')
 if args.If and args.Df == True:
     # checks if --install-font and --delete-font are both true and exits
-    print(f"{Fore.RED}{str(time.process_time())}: [ERROR]{Style.RESET_ALL} {Fore.WHITE}Conflicting arguments.{Style.RESET_ALL}")
+    printError("--install-font and --delete-font are both true. Please only use one of these options.")
     if args.log == True:
         errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
-        errorfile.write(f"{str(time.process_time())}: Conflicting arguments.")
+        errorfile.write(f"{str(time.process_time())}: --install-font and --delete-font are both true. Please only use one of these options.")
         errorfile.close()
     sys.exit(0)
 
@@ -76,10 +90,10 @@ if path == True:
     data = open("{Path}".format(Path = args.csspath), "r")
 else:
     # exits if the file is not a css file
-    print(f"{Fore.RED}[ERROR]{Style.RESET_ALL} {Fore.WHITE}Invalid file extension.{Style.RESET_ALL}")
+    printError("The file is not a css file.")
     if args.log == True:
         errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
-        errorfile.write(f"{str(time.process_time())}: Invalid file extension.")
+        errorfile.write(f"{str(time.process_time())}: The file is not a css file.")
         errorfile.close()
     sys.exit(0)
 
@@ -100,10 +114,10 @@ for i in range(rangenum):
     thdlistnum.append([])
     thllistnum.append([])
 if args.verbose >= 3:
-    print('List of lists:')
-    print(len(listnum))
-    print(len(thdlistnum))
-    print(len(thllistnum))
+    printDebug("List of lists:")
+    printDebug(f"number of lists for 'all': {len(listnum)}")
+    printDebug(f"number of lists for 'dark': {len(thdlistnum)}")
+    printDebug(f"number of lists for 'light': {len(thllistnum)}")
 
 def main():
     """Main function"""
@@ -116,23 +130,23 @@ def main():
     # buffer of the css file as individual lines
     buf = data.readlines()
     if args.verbose >= 4:
-        print(buf)
+        printDebug("Buffer of the css file as individual lines:")
+        printDebug(f"{buf}")
     if args.verbose >= 3:
-        print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}Buffer type:{Style.RESET_ALL}")
+        printDebug("Buffer type:")
         if isinstance(buf, list):
-            print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}List{Style.RESET_ALL}")
+            printDebug("Buffer type: List")
             if args.log == True:
                 errorfile = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
                 errorfile.write(f"{str(time.process_time())}: Buffer type: List")
                 errorfile.close()
         else:
-            print(f"{Fore.RED}{str(time.process_time())}: [ERROR]{Style.RESET_ALL} {Fore.WHITE}Not a list{Style.RESET_ALL}")
+            printWarning(f"Buffer type: {type(buf)}")
             if args.log == True:
                 errorfile = open(f"./logs/CSSTODOTXERROR-{datetime}.log", "a")
                 errorfile.write(f"{str(time.process_time())}: Not a list")
                 errorfile.close()
-        print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}Buffer length:{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{str(time.process_time())}: [INFO]{Style.RESET_ALL} {Fore.WHITE}{len(buf)}{Style.RESET_ALL}")
+        printDebug(f"Buffer length:{len(buf)}")
 
     # set counts to 0
     count = 0
@@ -190,11 +204,9 @@ def main():
         else:
             if append == True:
                 if args.verbose >= 4:
-                    print("Line{}: {}".format(count, line.strip()))
-                    print("")
+                    printDebug(f"Line{count}: {line.strip()}")
                 if args.verbose >= 3:
-                    print("Appending to 'all'")
-                    print("")
+                    printDebug("Appending to 'all'")
                 try:
                     # appends the line to 'all'
                     listnum[listitr].append(line)
@@ -207,11 +219,9 @@ def main():
                 pass            
             if appenddtheme == True:
                 if args.verbose >= 4:
-                    print("Dark theme, Line{}: {}".format(count, line.strip()))
-                    print("")
+                    printDebug(f"Dark Theme, Line{count}: {line.strip()}")
                 if args.verbose >= 3:
-                    print("Appending to 'dark'")
-                    print("")
+                    printDebug("Appending to 'dark'")
                 
                 try:
                     # appends the line to 'dark'
@@ -225,11 +235,9 @@ def main():
                 pass            
             if appendltheme == True:
                 if args.verbose >= 4:
-                    print("Light theme, Line{}: {}".format(count, line.strip()))
-                    print("")
+                    printDebug(f"Light theme, Line{count}: {line.strip()}")
                 if args.verbose >= 3:
-                    print("Appending to 'light'")
-                    print("")
+                    printDebug("Appending to 'light'")
                 try:
                     # appends the line to 'light'
                     thllistnum[themelitr].append(line)
@@ -241,7 +249,7 @@ def main():
             else:
                 pass
             if args.verbose >= 4:
-                print("Line{}: {}".format(count, line.strip()))      
+                printDebug(f"Line{count}: {line.strip()}") 
 
     # creates list objects 'dict' as 'all', 'ldict' as 'light' and 'ddict' as 'dark'
     dict = list()
@@ -250,8 +258,9 @@ def main():
     for level1 in listnum:
         #print(level1)
         if args.log == True:
+            # writes the section of 'all' to the dump file
             f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
-            f.write(f"{str(time.process_time_ns())}: all.section: ")
+            f.write(f"{str(time.process_time())}: all.section: ")
             f.write(str(level1))
             f.write("\n")
             f.close()
@@ -261,8 +270,9 @@ def main():
             value = value.replace(" ", "")
             value = value.split(":")
             if args.log == True:
+                # writes the values of 'all' to the dump file
                 f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
-                f.write(f"{str(time.process_time_ns())}: all.value: ")
+                f.write(f"{str(time.process_time())}: all.value: ")
                 f.write(str(value))
                 f.write("\n")
                 f.close()
@@ -276,8 +286,9 @@ def main():
             
     for level1 in thdlistnum:
         if args.log == True:
+            # writes the section of 'dark' to the dump file
             f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
-            f.write(f"{str(time.process_time_ns())}: dark.section: ")
+            f.write(f"{str(time.process_time())}: dark.section: ")
             f.write(str(level1))
             f.write("\n")
             f.close()
@@ -286,8 +297,9 @@ def main():
             value = value.replace(" ", "")
             value = value.split(":")
             if args.log == True:
+                # writes the values of 'dark' to the dump file
                 f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
-                f.write(f"{str(time.process_time_ns())}: dark.value: ")
+                f.write(f"{str(time.process_time())}: dark.value: ")
                 f.write(str(value))
                 f.write("\n")
                 f.close()
@@ -299,8 +311,9 @@ def main():
 
     for level1 in thllistnum:
         if args.log == True:
+            # writes the section of 'light' to the dump file
             f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
-            f.write(f"{str(time.process_time_ns())}: light.section: ")
+            f.write(f"{str(time.process_time())}: light.section: ")
             f.write(str(level1))
             f.write("\n")
             f.close()
@@ -309,8 +322,9 @@ def main():
             value = value.replace(" ", "")
             value = value.split(":")
             if args.log == True:
+                # writes the values of 'light' to the dump file
                 f = open(f"./logs/CSSTODOTXDUMP-{datetime}.log", "a")
-                f.write(f"{str(time.process_time_ns())}: light.value: ")
+                f.write(f"{str(time.process_time())}: light.value: ")
                 f.write(str(value))
                 f.write("\n")
                 f.close()
@@ -403,7 +417,7 @@ def main():
                     treename.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent1/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 1: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 1: {temp}")
                     else:
                         pass
             # Direct type tag
@@ -427,7 +441,7 @@ def main():
                     treename.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent1/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 1: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 1: {temp}")
                     else:
                         pass
         except KeyError:
@@ -466,7 +480,7 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent2/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 2: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 2: {temp}")
                     else:
                         pass
             else:
@@ -489,7 +503,7 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent2/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 2: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 2: {temp}")
                     else:
                         pass
         except KeyError:
@@ -528,7 +542,7 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent3/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 3: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 3: {temp}")
                     else:
                         pass
             else:
@@ -551,7 +565,7 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent3/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictname += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 3: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 3: {temp}")
                     else:
                         pass
         except KeyError:
@@ -590,7 +604,7 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent4/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 4: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 4: {temp}")
                     else:
                         pass
             else:
@@ -613,7 +627,7 @@ def main():
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent4/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     dictnum += 1
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 4: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 4: {temp}")
                     else:
                         pass
         except KeyError:
@@ -652,7 +666,7 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent5/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 5: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 5: {temp}")
                     else:
                         pass
             else:
@@ -675,7 +689,7 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent5/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 5: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 5: {temp}")
                     else:
                         pass
         except KeyError:
@@ -715,7 +729,7 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent6/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 6: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 6: {temp}")
                     else:
                         pass
             elif tag == "--accent-6":
@@ -738,7 +752,7 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent6/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 6: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 6: {temp}")
                     else:
                         pass
         except KeyError:
@@ -763,7 +777,7 @@ def main():
                     temp = dict[str(temp)]
                     temp = temp.removeprefix("#")
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, heading 6(Default to normal text): {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, heading 6(Default to normal text): {temp}")
                     else:
                         pass
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}accent6/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
@@ -801,11 +815,11 @@ def main():
                     temp = dict[str(temp)]
                     temp = temp.removeprefix("#")
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, Primary Background: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, Primary Background: {temp}")
                     else:
                         pass  
             else:
-                print("unsupported tag convention.")
+                printError("unsupported tag convention.")
                 pass
         except KeyError:
             pass
@@ -840,11 +854,11 @@ def main():
                     temp = temp.removeprefix("#")
                     tree.find("{http://schemas.openxmlformats.org/drawingml/2006/main}themeElements/{http://schemas.openxmlformats.org/drawingml/2006/main}clrScheme/{http://schemas.openxmlformats.org/drawingml/2006/main}hlink/{http://schemas.openxmlformats.org/drawingml/2006/main}srgbClr").set('val', '{Temp}'.format(Temp = temp))
                     if args.verbose >= 1:
-                        print("Dict: {Dictname}, Hyperlink text: {Temp}".format(Temp = temp, Dictname = dictname))
+                        printDebug(f"Dict: {dictname}, Hyperlink: {temp}")
                     else:
                         pass
             else:
-                print("unsupported tag convention.")
+                printError("unsupported tag convention.")
                 pass
         except KeyError:
             pass
@@ -1008,7 +1022,7 @@ def main():
         lst = dict["--font-monospace"]
         lst = lst.split(",")
         if args.verbose >= 2:
-            print(print("{Lst}".format(Lst = lst[1])))
+            printInfo(f"Fonts: {lst}")
         else:
             pass
         name = lst[1]
@@ -1016,7 +1030,7 @@ def main():
         try:
             shutil.rmtree(name)
         except OSError as e:
-            print("Error: %s - %s." % (e.filename, e.strerror))
+            printError("Error: %s - %s." % (e.filename, e.strerror))
         spacedname = re.sub(r"(\w)([A-Z])", r"\1 \2", name)
         urlname = spacedname.replace(" ", "%20")
         #print(urlname)
@@ -1034,9 +1048,8 @@ def main():
         os.remove("./{Name}/OFL.txt".format(Name = name))
         fonts = os.listdir("./{Name}".format(Name = name))
         for font in fonts:
-
             if args.verbose >= 3:
-                print(font)
+                printInfo(f"Font: {font}")
             else:
                 pass
             fontn = font.replace("-", "")
@@ -1048,7 +1061,7 @@ def main():
             #fontlast = fontslist[x].split(".")
             #fontslist = fontslist.append(fontlast)
             if args.verbose >= 3:
-                print(fontslist)
+                printInfo(f"Fontslist: {fontslist}")
             else:
                 pass
             fontout = []
@@ -1069,7 +1082,7 @@ def main():
                     fontout.append("Semibold")
                 elif font1 == "Bold":
                     if args.verbose >= 3:
-                        print("Should remove bold? {Removebold}".format(Removebold = removebold))
+                        printDebug(f"Should remove bold? {removebold}")
                     if removelight == True:
                         pass
                     if removebold == True:
@@ -1079,7 +1092,7 @@ def main():
                         fontout.append(font1)
                 elif font1 == "Light":
                     if args.verbose >= 3:
-                        print("Should remove light? {Removelight}".format(Removelight = removelight))
+                        printDebug(f"Should remove light? {removelight}")
                     else:
                        pass
                     if removelight == True:
@@ -1096,31 +1109,30 @@ def main():
             valfile = spacedfont.removesuffix(".ttf")
             valname = "{Font} (TrueType)".format(Font = valfile)
             if args.verbose >= 3:
-                print(valname)
+                printInfo(f"Registry Value Name: {valname}")
             else:
                 pass
             
             try:
                 if args.verbose >= 3:
-                    print("Values of {Valname} are {Values}.".format(Values = winreg.QueryValueEx(key, valname), Valname = valname))
+                    printInfo(f"Values of {valname} are {winreg.QueryValueEx(key, valname)}.")
                 else:
                     pass
             except OSError:
                 if args.verbose >= 2:
-                    print("Value for {Valname} does not exist.".format(Valname = valname))
+                    printWarning(f"{valname} not found in registry.")
                 else:
                     pass
                 pass
             try:
                 winreg.DeleteValue(key, valname)
                 if args.verbose >= 2:
-                    print("")
+                    printDebug(f"{valname} deleted from registry.")
                 else:
                     pass
             except OSError:
                 if args.verbose >= 2:
-                    print("Value for {Valname} cannot be Deleted.".format(Valname = valname))
-                    print("")
+                    printWarning(f"{valname} not found in registry.")
                 else:
                     pass
                 pass
@@ -1148,7 +1160,7 @@ def main():
         except OSError:
             pass
     else:
-        print("-if or -install-font value is not a bool.")
+        printError(f"-if or -install-font value is not a bool.")
         sys.exit(0)
 
     if args.output == "":
